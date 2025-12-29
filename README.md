@@ -2,7 +2,7 @@
 
 A high-performance, real-time system monitoring dashboard built with **Angular 21**, **Signals**, **PrimeNG 21**, and **Node.js**. Monitor your system's health, CPU usage, memory distribution, disk activity, and active processes from a beautiful, glassmorphic interface.
 
-![Dashboard Preview](https://raw.githubusercontent.com/username/sys-dashboard/main/preview.png) *(Note: Placeholder for actual preview image)*
+![Dashboard Preview](./preview.png)
 
 ## ✨ Features
 

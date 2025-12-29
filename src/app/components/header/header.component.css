@@ -46,42 +46,9 @@ body.dark :host ::ng-deep .custom-select-button .p-button.p-highlight {
     color: var(--text-color);
 }
 
-/* ToggleSwitch Overrides with Animation Fix */
-:host ::ng-deep p-toggleSwitch .p-toggleswitch {
-    width: 2.75rem;
-    height: 1.4rem;
-}
-
-:host ::ng-deep p-toggleSwitch .p-toggleswitch-slider {
-    background: rgba(0, 0, 0, 0.1) !important;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 2rem;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-body.dark :host ::ng-deep p-toggleSwitch .p-toggleswitch-slider {
-    background: rgba(255, 255, 255, 0.1) !important;
-    border-color: rgba(255, 255, 255, 0.1);
-}
-
-:host ::ng-deep p-toggleSwitch .p-toggleswitch-handle {
-    width: 1rem;
-    height: 1rem;
-    top: 50% !important;
-    margin-top: -0.5rem !important;
-    background: #fff !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
-    left: 0.2rem !important;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-:host ::ng-deep p-toggleSwitch.p-toggleswitch-checked .p-toggleswitch-handle {
-    transform: translateX(1.3rem) !important;
-}
-
-:host ::ng-deep p-toggleSwitch.p-toggleswitch-checked .p-toggleswitch-slider {
-    background: var(--primary-color) !important;
-    border-color: var(--primary-color) !important;
+/* ToggleSwitch Specific Header Refinements */
+:host ::ng-deep .p-toggleswitch {
+    margin-right: 0.5rem;
 }
 
 /* Status colors */

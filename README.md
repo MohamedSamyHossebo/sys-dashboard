@@ -1,59 +1,83 @@
-# SysDashboard
+# 📊 System Dashboard (SysDashboard)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.0.
+A high-performance, real-time system monitoring dashboard built with **Angular 19**, **Signals**, **PrimeNG 21**, and **Node.js**. Monitor your system's health, CPU usage, memory distribution, disk activity, and active processes from a beautiful, glassmorphic interface.
 
-## Development server
+![Dashboard Preview](https://raw.githubusercontent.com/username/sys-dashboard/main/preview.png) *(Note: Placeholder for actual preview image)*
 
-To start a local development server, run:
+## ✨ Features
 
-```bash
-ng serve
-```
+- **Real-time Monitoring**: Live updates of CPU, Memory, and Disk usage using a signal-driven architecture.
+- **Historical Analysis**: Visualized trends with CPU and Memory history charts (Chart.js).
+- **Process Management**: Top 10 CPU-intensive processes listed with real-time stats.
+- **Widget Customization**: Toggle individual monitoring widgets on/off to customize your view.
+- **Modern UI/UX**:
+    - **Glassmorphism**: Premium frosted-glass header and card designs.
+    - **Dark Mode**: Seamless theme switching with persistent brightness awareness.
+    - **Tailwind CSS v4**: Blazing fast styling with the latest Tailwind features.
+- **Performance Optimized**: 
+    - Parallelized backend data gathering.
+    - "Poll-after-response" pattern to eliminate network request cancellations.
+    - Zero-animation sparklines for high-frequency updates to keep the main thread idle.
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## 🛠️ Tech Stack
 
-## Code scaffolding
+- **Frontend**: Angular 19 (Standalone), RxJS, Signals.
+- **UI Components**: PrimeNG 21, PrimeIcons.
+- **Styling**: Tailwind CSS v4, Vanilla CSS variables.
+- **Charts**: Chart.js.
+- **Backend**: Node.js, Express.
+- **System Stats**: `systeminformation` library.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## 🚀 Getting Started
 
-```bash
-ng generate component component-name
-```
+### Prerequisites
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+- [Node.js](https://nodejs.org/) (v18.0.0 or higher)
+- [npm](https://www.npmjs.com/) (v9.0.0 or higher)
 
-```bash
-ng generate --help
-```
+### Installation
 
-## Building
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/your-username/sys-dashboard.git
+   cd sys-dashboard
+   ```
 
-To build the project run:
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-```bash
-ng build
-```
+### Running the Application
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+This project requires both the backend API and the frontend dev server to be running.
 
-## Running unit tests
+1. **Start the Backend Server (Port 3000)**:
+   ```bash
+   node server.js
+   ```
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+2. **Start the Frontend (Port 4200)**:
+   ```bash
+   npm start
+   ```
 
-```bash
-ng test
-```
+3. **Open your browser**:
+   Navigate to `http://localhost:4200` to view your dashboard.
 
-## Running end-to-end tests
+## ⚙️ Configuration
 
-For end-to-end (e2e) testing, run:
+- **Refresh Rate**: You can adjust the polling interval (1s, 5s, 10s, 30s) directly from the header.
+- **Proxy**: The frontend is configured to proxy `/api` requests to `localhost:3000` via `proxy.conf.json`.
 
-```bash
-ng e2e
-```
+## 🧪 Development
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+### Code Scaffolding
+Run `ng generate component component-name` to generate a new component.
 
-## Additional Resources
+### Building
+Run `npm run build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+---
+
+Developed with ❤️ using modern Angular best practices.

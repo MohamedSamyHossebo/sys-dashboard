@@ -293,6 +293,11 @@ app.get('/api/system/all', async (req, res) => {
   res.json(allStats);
 });
 
+// Get historical system data
+app.get('/api/system/history', (req, res) => {
+  res.json(historicalData);
+});
+
 // Get detailed process list
 app.get('/api/system/processes', async (req, res) => {
   try {

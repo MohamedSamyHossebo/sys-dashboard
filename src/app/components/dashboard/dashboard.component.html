@@ -1,9 +1,18 @@
 <div class="dashboard-container p-4">
     <!-- New Header Component -->
-    <app-header [systemHealth]="stats()?.health || 100" [lastUpdate]="stats()?.timestamp || ''"
-        [isLoading]="isLoading()" (refresh)="refresh()" (refreshRateChange)="onRefreshRateChange($event)"
-        (darkModeToggle)="onDarkModeToggle($event)">
-    </app-header>
+    <div class="header-section mb-6">
+        <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-4">
+            <app-header [systemHealth]="stats()?.health || 100" [lastUpdate]="stats()?.timestamp || ''"
+                [isLoading]="isLoading()" (refresh)="refresh()" (refreshRateChange)="onRefreshRateChange($event)"
+                (darkModeToggle)="onDarkModeToggle($event)">
+            </app-header>
+            <div class="flex align-items-center gap-2">
+                <button pButton icon="pi pi-cog" label="Customize Widgets"
+                    class="p-button-outlined p-button-secondary p-button-sm border-round-xl" (click)="toggleSettings()">
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Error Message -->
     @if (error()) {
@@ -24,11 +33,21 @@
     </div>
     }
 
+    <!-- System Alerts -->
+    @if (alerts().length > 0) {
+    <div class="col-12 mb-4">
+        @for (alert of alerts(); track $index) {
+        <p-message [severity]="alert.severity" [text]="alert.summary + ': ' + alert.detail" styleClass="w-full mb-2">
+        </p-message>
+        }
+    </div>
+    }
+
     <!-- Metrics Summary Component & Dashboard Content -->
     @if (stats(); as currentStats) {
     <app-metrics-summary [cpuCores]="currentStats.cpu.cores" [memoryUsage]="currentStats.memory.usedPercentage"
-        [diskUsage]="'65'" [uptime]="uptimeFormatted()" [networkCount]="currentStats.networkInterfaces"
-        [health]="currentStats.health">
+        [diskUsage]="currentStats.disk?.usedPercentage || '0'" [uptime]="uptimeFormatted()"
+        [networkCount]="currentStats.networkInterfaces" [health]="currentStats.health">
     </app-metrics-summary>
 
     <!-- Dashboard Content -->
@@ -106,7 +125,7 @@
             </p-card>
         </div>
 
-        <!-- Memory Info Card -->
+        <!-- Memory Usage Card -->
         <div class="col-12 lg:col-6">
             <p-card header="Memory Usage">
                 <div class="stat-item">
@@ -140,47 +159,133 @@
             </p-card>
         </div>
 
-        <!-- Memory Chart Card -->
+        <!-- Disk Usage Card -->
         <div class="col-12 lg:col-6">
+            <p-card header="Disk Usage">
+                @if (currentStats.disk; as disk) {
+                <div class="stat-item">
+                    <i class="pi pi-hdd stat-icon"></i>
+                    <div class="flex-1">
+                        <div class="stat-label">Total Disk Space</div>
+                        <div class="stat-value">{{ disk.totalGB }} GB</div>
+                    </div>
+                </div>
+
+                <div class="stat-item">
+                    <i class="pi pi-chart-pie stat-icon"></i>
+                    <div class="flex-1">
+                        <div class="stat-label">Used Space</div>
+                        <div class="stat-value">{{ disk.usedGB }} GB ({{ disk.usedPercentage }}%)</div>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <p-progressBar [value]="disk.usedPercentage" [showValue]="true" [style]="{'height': '2rem'}"
+                        [color]="'#8b5cf6'">
+                    </p-progressBar>
+                </div>
+
+                <div class="mt-3">
+                    <p-tag [value]="'Free: ' + disk.freeGB + ' GB'" severity="success"></p-tag>
+                </div>
+                } @else {
+                <div class="p-3 text-center text-muted">
+                    <i class="pi pi-info-circle mr-2"></i>
+                    Disk information not available
+                </div>
+                }
+            </p-card>
+        </div>
+
+        <!-- CPU Usage History Chart -->
+        @if (isWidgetVisible('cpu-history')) {
+        <div class="col-12 lg:col-6">
+            <p-card header="CPU Usage History (%)">
+                @if (cpuHistoryChartData()) {
+                <div class="chart-container" style="height: 250px;">
+                    <p-chart type="line" [data]="cpuHistoryChartData()!" [options]="cpuHistoryChartOptions()"
+                        [style]="{'height': '250px', 'width': '100%'}">
+                    </p-chart>
+                </div>
+                }
+            </p-card>
+        </div>
+        }
+
+        <!-- Memory Usage History Chart -->
+        @if (isWidgetVisible('mem-history')) {
+        <div class="col-12 lg:col-6">
+            <p-card header="Memory Usage History (%)">
+                @if (memoryHistoryChartData()) {
+                <div class="chart-container" style="height: 250px;">
+                    <p-chart type="line" [data]="memoryHistoryChartData()!" [options]="memoryHistoryChartOptions()"
+                        [style]="{'height': '250px', 'width': '100%'}">
+                    </p-chart>
+                </div>
+                }
+            </p-card>
+        </div>
+        }
+
+        <!-- Memory Distribution Chart (Doughnut) -->
+        @if (isWidgetVisible('mem-dist')) {
+        <div class="col-12 lg:col-4">
             <p-card header="Memory Distribution">
                 @if (memoryChartData()) {
                 <div class="chart-container">
-                    <p-chart type="doughnut" [data]="memoryChartData()!" [options]="memoryChartOptions"
+                    <p-chart type="doughnut" [data]="memoryChartData()!" [options]="memoryChartOptions()"
                         [style]="{'height': '250px'}">
                     </p-chart>
                 </div>
                 }
             </p-card>
         </div>
+        }
+
+        <!-- System Processes Table -->
+        @if (isWidgetVisible('processes')) {
+        <div class="col-12 lg:col-8">
+            <p-card header="Top System Processes">
+                <p-table [value]="currentStats.processes || []" [paginator]="true" [rows]="5"
+                    styleClass="p-datatable-sm" [responsiveLayout]="'scroll'">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>PID</th>
+                            <th>Name</th>
+                            <th>CPU %</th>
+                            <th>Mem %</th>
+                            <th>User</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-proc>
+                        <tr>
+                            <td>{{ proc.pid }}</td>
+                            <td><strong>{{ proc.name }}</strong></td>
+                            <td>
+                                <p-tag [value]="proc.cpu + '%'"
+                                    [severity]="proc.cpu > 50 ? 'danger' : (proc.cpu > 20 ? 'warn' : 'info')"></p-tag>
+                            </td>
+                            <td>{{ proc.mem }}%</td>
+                            <td>{{ proc.user }}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </p-card>
+        </div>
+        }
 
         <!-- Uptime Card -->
+        @if (isWidgetVisible('uptime')) {
         <div class="col-12 lg:col-6">
             <p-card header="System Uptime">
-                <div class="uptime-display">
-                    <i class="pi pi-clock uptime-icon"></i>
-                    <div class="uptime-value">{{ uptimeFormatted() }}</div>
-                </div>
-
-                <div class="mt-3 grid text-center">
-                    <div class="col-3">
-                        <div class="uptime-number">{{ currentStats.uptime.formatted.days }}</div>
-                        <div class="uptime-label">Days</div>
-                    </div>
-                    <div class="col-3">
-                        <div class="uptime-number">{{ currentStats.uptime.formatted.hours }}</div>
-                        <div class="uptime-label">Hours</div>
-                    </div>
-                    <div class="col-3">
-                        <div class="uptime-number">{{ currentStats.uptime.formatted.minutes }}</div>
-                        <div class="uptime-label">Minutes</div>
-                    </div>
-                    <div class="col-3">
-                        <div class="uptime-number">{{ currentStats.uptime.formatted.seconds }}</div>
-                        <div class="uptime-label">Seconds</div>
-                    </div>
+                <div class="flex flex-column align-items-center justify-content-center py-4">
+                    <i class="pi pi-clock text-4xl mb-3 text-primary"></i>
+                    <div class="text-3xl font-bold text-color">{{ uptimeFormatted() }}</div>
+                    <div class="uptime-label mt-2">Continuous Operation</div>
                 </div>
             </p-card>
         </div>
+        }
 
         <!-- Network Info Card -->
         <div class="col-12 lg:col-6">
@@ -203,10 +308,31 @@
 
     </div>
 
-    <!-- Last Updated -->
-    <div class="mt-4 text-center">
-        <i class="pi pi-sync mr-2"></i>
-        Last updated: {{ currentStats.timestamp | date:'medium' }}
-        <span class="ml-2">(Auto-refreshes every 5 seconds)</span>
+    <!-- Last Updated & Stats -->
+    <div class="mt-4 text-center text-sm text-color-secondary">
+        Last updated: {{ currentStats.timestamp | date:'mediumTime' }} | Server: localhost:3000
     </div>
     }
+
+    <!-- Widget Configuration Dialog -->
+    <p-dialog header="Customize Dashboard Layout" [(visible)]="showSettings" [modal]="true" [style]="{width: '450px'}"
+        [draggable]="false" [resizable]="false" styleClass="custom-dialog">
+        <div class="flex flex-column gap-3 py-3">
+            <div class="text-color-secondary mb-2">Show or hide dashboard widgets based on your preference.</div>
+            @for (widget of widgetSettings(); track widget.id) {
+            <div
+                class="flex align-items-center justify-content-between p-3 border-round-xl surface-ground hover:surface-hover transition-all">
+                <div class="flex align-items-center gap-3">
+                    <i class="pi pi-th-large text-primary"></i>
+                    <span class="font-semibold text-color">{{ widget.name }}</span>
+                </div>
+                <p-checkbox [(ngModel)]="widget.visible" [binary]="true" (onChange)="saveWidgetSettings()"></p-checkbox>
+            </div>
+            }
+        </div>
+        <ng-template pTemplate="footer">
+            <button pButton icon="pi pi-check" label="Done" class="p-button-text p-button-primary"
+                (click)="toggleSettings()"></button>
+        </ng-template>
+    </p-dialog>
+</div>

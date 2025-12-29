@@ -93,6 +93,15 @@ export interface HistoricalData {
     maxPoints: number;
 }
 
+export interface ProcessInfo {
+    pid: number;
+    name: string;
+    cpu: string;
+    mem: string;
+    status: string;
+    user: string;
+}
+
 export interface AllSystemStats {
     systemInfo: SystemInfo;
     cpu: CpuInfo;
@@ -101,6 +110,14 @@ export interface AllSystemStats {
     loadAverage: LoadAverage;
     networkInterfaces: number;
     health: number;
+    disk: {
+        totalGB: string;
+        usedGB: string;
+        freeGB: string;
+        usedPercentage: string;
+    } | null;
+    history: HistoricalDataPoint[];
+    processes?: Partial<ProcessInfo>[];
     timestamp: string;
 }
 
@@ -151,6 +168,10 @@ export class SystemService {
 
     getHistoricalData(): Observable<HistoricalData> {
         return this.http.get<HistoricalData>(`${this.baseUrl}/history`);
+    }
+
+    getProcesses(): Observable<ProcessInfo[]> {
+        return this.http.get<ProcessInfo[]>(`${this.baseUrl}/processes`);
     }
 
     getAllStats(): Observable<AllSystemStats> {

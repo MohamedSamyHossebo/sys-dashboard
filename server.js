@@ -176,97 +176,55 @@ app.get('/api/system/load', (req, res) => {
   });
 });
 
-// Get disk usage (estimated based on memory as proxy - limited by os module)
-app.get('/api/system/disk', (req, res) => {
-  // Note: os module doesn't provide disk info, this is a mock/estimation
-  // For real disk info, you'd need the 'systeminformation' package
-  const totalMemory = os.totalmem();
-  const estimatedDisk = totalMemory * 10; // Rough estimation
-  const estimatedUsed = estimatedDisk * 0.65; // Assume 65% used
-  const estimatedFree = estimatedDisk - estimatedUsed;
+const si = require('systeminformation');
 
-  res.json({
-    total: estimatedDisk,
-    used: estimatedUsed,
-    free: estimatedFree,
-    usedPercentage: ((estimatedUsed / estimatedDisk) * 100).toFixed(2),
-    totalGB: formatBytes(estimatedDisk),
-    usedGB: formatBytes(estimatedUsed),
-    freeGB: formatBytes(estimatedFree),
-    note: 'Estimated values - install systeminformation package for accurate disk data'
-  });
-});
+// ... (rest of the code until disk route)
 
-// Get network interfaces with enhanced info
-app.get('/api/system/network', (req, res) => {
-  const networkInterfaces = os.networkInterfaces();
-  const formattedInterfaces = [];
+// Get disk usage (using systeminformation for accuracy)
+app.get('/api/system/disk', async (req, res) => {
+  try {
+    const disks = await si.fsSize();
+    const mainDisk = disks[0]; // Get the primary disk
 
-  for (const [name, interfaces] of Object.entries(networkInterfaces)) {
-    interfaces.forEach(iface => {
-      formattedInterfaces.push({
-        name: name,
-        address: iface.address,
-        netmask: iface.netmask,
-        family: iface.family,
-        mac: iface.mac,
-        internal: iface.internal,
-        cidr: iface.cidr
-      });
+    res.json({
+      total: mainDisk.size,
+      used: mainDisk.used,
+      free: mainDisk.available,
+      usedPercentage: mainDisk.use.toFixed(2),
+      totalGB: (mainDisk.size / (1024 ** 3)).toFixed(2),
+      usedGB: (mainDisk.used / (1024 ** 3)).toFixed(2),
+      freeGB: (mainDisk.available / (1024 ** 3)).toFixed(2),
+      mount: mainDisk.mount
     });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to get disk information' });
   }
-
-  res.json({
-    interfaces: formattedInterfaces,
-    count: formattedInterfaces.length
-  });
 });
 
-// Get system health score
-app.get('/api/system/health', (req, res) => {
-  const totalMemory = os.totalmem();
-  const freeMemory = os.freemem();
-  const usedMemory = totalMemory - freeMemory;
-  const memoryUsage = (usedMemory / totalMemory) * 100;
-  const cpuUsage = getCpuUsage();
+// ... (rest of the code until /all route)
 
-  const health = getSystemHealth(memoryUsage, cpuUsage);
-
-  let status = 'excellent';
-  if (health < 50) status = 'critical';
-  else if (health < 70) status = 'warning';
-  else if (health < 85) status = 'good';
-
-  res.json({
-    score: health,
-    status: status,
-    metrics: {
-      memoryUsage: memoryUsage.toFixed(2),
-      cpuUsage: cpuUsage
-    }
-  });
-});
-
-// Get historical data
-app.get('/api/system/history', (req, res) => {
-  res.json({
-    data: historicalData,
-    count: historicalData.length,
-    maxPoints: MAX_HISTORY
-  });
-});
-
-// Get all system stats (enhanced)
-app.get('/api/system/all', (req, res) => {
+// Get all system stats (enhanced with history and disk)
+app.get('/api/system/all', async (req, res) => {
   const cpus = os.cpus();
   const totalMemory = os.totalmem();
   const freeMemory = os.freemem();
   const usedMemory = totalMemory - freeMemory;
   const memoryUsage = (usedMemory / totalMemory) * 100;
   const uptimeSeconds = os.uptime();
-  const networkInterfaces = os.networkInterfaces();
   const cpuUsage = getCpuUsage();
   const loadAvg = os.loadavg();
+
+  let diskInfo = null;
+  try {
+    const disks = await si.fsSize();
+    const mainDisk = disks[0];
+    diskInfo = {
+      totalGB: (mainDisk.size / (1024 ** 3)).toFixed(2),
+      usedGB: (mainDisk.used / (1024 ** 3)).toFixed(2),
+      freeGB: (mainDisk.available / (1024 ** 3)).toFixed(2),
+      usedPercentage: mainDisk.use.toFixed(2)
+    };
+  } catch (e) { }
 
   const allStats = {
     systemInfo: {
@@ -301,10 +259,29 @@ app.get('/api/system/all', (req, res) => {
       '5min': loadAvg[1].toFixed(2),
       '15min': loadAvg[2].toFixed(2)
     },
-    networkInterfaces: Object.keys(networkInterfaces).length,
-    health: getSystemHealth(memoryUsage, cpuUsage),
+    networkInterfaces: Object.keys(os.networkInterfaces()).length,
+    health: getSystemHealth(memoryUsage, cpuUsage, diskInfo?.usedPercentage || 0),
+    disk: diskInfo,
+    history: historicalData,
     timestamp: new Date().toISOString()
   };
+
+  // Fetch top processes if possible
+  try {
+    const procData = await si.processes();
+    allStats.processes = procData.list
+      .sort((a, b) => b.cpu - a.cpu)
+      .slice(0, 10)
+      .map(p => ({
+        pid: p.pid,
+        name: p.name,
+        cpu: p.cpu,
+        mem: p.mem,
+        user: p.user
+      }));
+  } catch (e) {
+    allStats.processes = [];
+  }
 
   // Store in historical data
   storeHistoricalData({
@@ -314,6 +291,27 @@ app.get('/api/system/all', (req, res) => {
   });
 
   res.json(allStats);
+});
+
+// Get detailed process list
+app.get('/api/system/processes', async (req, res) => {
+  try {
+    const procData = await si.processes();
+    const sortedProcs = procData.list
+      .sort((a, b) => b.cpu - a.cpu || b.mem - a.mem)
+      .slice(0, 50) // Return top 50
+      .map(p => ({
+        pid: p.pid,
+        name: p.name,
+        cpu: p.cpu.toFixed(2),
+        mem: p.mem.toFixed(2),
+        status: p.state,
+        user: p.user
+      }));
+    res.json(sortedProcs);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to get process information' });
+  }
 });
 
 // Start server

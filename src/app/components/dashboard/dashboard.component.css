@@ -339,3 +339,45 @@ body.dark-mode .mt-4.text-center {
         padding: 1rem !important;
     }
 }
+
+/* Custom Dialog Styling */
+:host ::ng-deep .custom-dialog .p-dialog-content {
+    background: var(--surface-card);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--surface-border);
+}
+
+body.dark-mode :host ::ng-deep .custom-dialog .p-dialog-content {
+    background: rgba(17, 24, 39, 0.95);
+    border-color: rgba(139, 92, 246, 0.3);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+:host ::ng-deep .custom-dialog .p-dialog-header {
+    background: var(--surface-card);
+    border-bottom: 1px solid var(--surface-border);
+    color: var(--text-color);
+}
+
+body.dark-mode :host ::ng-deep .custom-dialog .p-dialog-header {
+    background: rgba(17, 24, 39, 0.98);
+    border-color: rgba(139, 92, 246, 0.2);
+}
+
+:host ::ng-deep .custom-dialog .p-dialog-footer {
+    background: var(--surface-card);
+    border-top: 1px solid var(--surface-border);
+}
+
+body.dark-mode :host ::ng-deep .custom-dialog .p-dialog-footer {
+    background: rgba(17, 24, 39, 0.98);
+    border-color: rgba(139, 92, 246, 0.2);
+}
+
+.surface-hover {
+    background: var(--surface-section);
+}
+
+body.dark-mode .surface-hover {
+    background: rgba(139, 92, 246, 0.1);
+}

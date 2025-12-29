@@ -4,6 +4,7 @@
     border: none;
     gap: 0.5rem;
     padding: 0.125rem;
+    min-width: 14rem;
 }
 
 :host ::ng-deep .custom-select-button .p-button {
@@ -15,7 +16,7 @@
     font-size: 0.75rem;
     font-weight: 600;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    min-width: 2.5rem;
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -45,34 +46,42 @@ body.dark :host ::ng-deep .custom-select-button .p-button.p-highlight {
     color: var(--text-color);
 }
 
-/* ToggleSwitch Overrides */
+/* ToggleSwitch Overrides with Animation Fix */
 :host ::ng-deep p-toggleSwitch .p-toggleswitch {
-    width: 2.5rem;
-    height: 1.25rem;
+    width: 2.75rem;
+    height: 1.4rem;
 }
 
 :host ::ng-deep p-toggleSwitch .p-toggleswitch-slider {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 2rem;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+body.dark :host ::ng-deep p-toggleSwitch .p-toggleswitch-slider {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
 :host ::ng-deep p-toggleSwitch .p-toggleswitch-handle {
-    width: 0.85rem;
-    height: 0.85rem;
-    top: 50%;
-    transform: translateY(-50%);
-    background: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    left: 0.2rem;
+    width: 1rem;
+    height: 1rem;
+    top: 50% !important;
+    margin-top: -0.5rem !important;
+    background: #fff !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+    left: 0.2rem !important;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-:host ::ng-deep p-toggleSwitch .p-toggleswitch-checked .p-toggleswitch-handle {
-    left: calc(100% - 1.05rem);
+:host ::ng-deep p-toggleSwitch.p-toggleswitch-checked .p-toggleswitch-handle {
+    transform: translateX(1.3rem) !important;
 }
 
-:host ::ng-deep p-toggleSwitch .p-toggleswitch-checked .p-toggleswitch-slider {
+:host ::ng-deep p-toggleSwitch.p-toggleswitch-checked .p-toggleswitch-slider {
     background: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
 }
 
 /* Status colors */
@@ -108,4 +117,13 @@ body.dark :host ::ng-deep .custom-select-button .p-button.p-highlight {
 
 .animate-pulse {
     animation: pulse 2s ease-in-out infinite;
+}
+
+/* Toggle Icon Glows */
+.text-amber-500 {
+    filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.4));
+}
+
+.text-purple-400 {
+    filter: drop-shadow(0 0 8px rgba(167, 139, 250, 0.4));
 }

@@ -18,7 +18,7 @@ import { MetricsSummaryComponent } from '../metrics-summary/metrics-summary.comp
 
 // PrimeNG UI Modules
 import { DialogModule } from 'primeng/dialog';
-import { CheckboxModule } from 'primeng/checkbox';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { FormsModule } from '@angular/forms';
 
 export interface WidgetConfig {
@@ -41,7 +41,7 @@ export interface WidgetConfig {
         TableModule,
         MessageModule,
         DialogModule,
-        CheckboxModule,
+        ToggleSwitchModule,
         FormsModule,
         HeaderComponent,
         MetricsSummaryComponent

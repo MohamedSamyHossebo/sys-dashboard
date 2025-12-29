@@ -358,8 +358,8 @@
                         </div>
                         <span class="font-semibold text-color">{{ widget.name }}</span>
                     </div>
-                    <p-checkbox [(ngModel)]="widget.visible" [binary]="true" (onChange)="saveWidgetSettings()"
-                        class="custom-check"></p-checkbox>
+                    <p-toggleSwitch [(ngModel)]="widget.visible" (onChange)="saveWidgetSettings()"
+                        class="custom-switch"></p-toggleSwitch>
                 </div>
                 }
             </div>

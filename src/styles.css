@@ -1,3 +1,10 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #8b5cf6;
+  --color-primary-600: #7c3aed;
+}
+
 /* You can add global styles to this file, and also import other style files */
 
 /* PrimeNG Styles */
@@ -28,7 +35,7 @@ body {
 }
 
 /* Dark Mode - Enhanced Colors */
-body.dark-mode {
+body.dark {
   --bg-gradient-start: #0a0e27;
   --bg-gradient-mid: #1a1f3a;
   --bg-gradient-end: #2d1b4e;
@@ -218,7 +225,7 @@ body.dark-mode .glass-card {
 }
 
 /* Dark Mode Support - Enhanced */
-body.dark-mode {
+body.dark {
   --primary-color: #8b5cf6;
   --primary-color-text: #ffffff;
 }

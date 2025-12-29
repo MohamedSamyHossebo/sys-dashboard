@@ -374,6 +374,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     onDarkModeToggle(enabled: boolean): void {
         this.isDarkMode.set(enabled);
-        document.body.classList.toggle('dark-mode', enabled);
+        document.body.classList.toggle('dark', enabled);
     }
 }

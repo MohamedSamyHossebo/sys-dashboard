@@ -1,52 +1,73 @@
-<p-toolbar class="header-toolbar">
-    <div class="flex align-items-center justify-content-between w-full gap-3 flex-wrap">
+<header
+    class="w-full bg-white/5 dark:bg-black/20 backdrop-blur-xl border border-white/10 dark:border-white/5 rounded-2xl p-4 mb-6 shadow-xl transition-all duration-300">
+    <div class="flex flex-col lg:flex-row items-center justify-between gap-6">
 
-        <!-- Left Section: Title and Health -->
-        <div class="flex align-items-center gap-3">
-            <div class="header-title">
-                <i class="pi pi-desktop"></i>
-                <h2 class="m-0">System Monitor</h2>
+        <!-- Left: Title & Health -->
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3 group">
+                <div class="p-2.5 bg-primary/10 rounded-xl group-hover:bg-primary/20 transition-colors duration-300">
+                    <i class="pi pi-desktop text-2xl text-primary animate-pulse"></i>
+                </div>
+                <div class="flex flex-col">
+                    <h2
+                        class="text-xl md:text-2xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary-600 bg-clip-text text-transparent m-0">
+                        System Monitor
+                    </h2>
+                    <span
+                        class="text-[10px] uppercase tracking-widest text-color-secondary font-medium opacity-70">Analytics
+                        Dashboard</span>
+                </div>
             </div>
 
-            <p-badge [value]="systemHealth() + '%'" [severity]="$any(healthStatus().severity)" size="large">
-            </p-badge>
+            <div class="h-8 w-px bg-white/10 mx-2 hidden md:block"></div>
 
-            <span class="health-status" [class]="'status-' + healthStatus().severity">
-                {{ healthStatus().label }}
-            </span>
+            <div class="flex items-center gap-2">
+                <p-badge [value]="systemHealth() + '%'" [severity]="$any(healthStatus().severity)" size="large"
+                    class="shadow-sm">
+                </p-badge>
+                <div class="hidden sm:flex flex-col">
+                    <span class="text-sm font-bold" [class]="'text-' + healthStatus().severity">
+                        {{ healthStatus().label }}
+                    </span>
+                    <span class="text-[10px] text-color-secondary opacity-60">Status</span>
+                </div>
+            </div>
         </div>
 
-        <!-- Right Section: Controls -->
-        <div class="flex align-items-center gap-3 flex-wrap">
+        <!-- Right: Controls -->
+        <div class="flex items-center gap-4 flex-wrap justify-center lg:justify-end">
 
-            <!-- Dark Mode Toggle -->
-            <div class="flex align-items-center gap-2">
-                <i class="pi pi-moon"></i>
+            <!-- Appearance -->
+            <div class="flex items-center gap-3 px-4 py-2 bg-white/5 dark:bg-black/20 rounded-xl border border-white/5">
+                <i class="pi" [ngClass]="isDarkMode ? 'pi-moon text-primary' : 'pi-sun text-orange-400'"></i>
                 <p-toggleSwitch [(ngModel)]="isDarkMode" (ngModelChange)="onDarkModeToggle()">
                 </p-toggleSwitch>
             </div>
 
-            <!-- Refresh Rate Selector -->
-            <div class="flex align-items-center gap-2">
-                <i class="pi pi-clock"></i>
+            <!-- Refresh Rates -->
+            <div
+                class="hidden md:flex items-center gap-3 px-4 py-1.5 bg-white/5 dark:bg-black/20 rounded-xl border border-white/5">
+                <i class="pi pi-bolt text-color-secondary opacity-70"></i>
                 <p-selectButton [options]="refreshRateOptions" [(ngModel)]="selectedRefreshRate"
-                    (ngModelChange)="onRefreshRateChange()" optionLabel="label" optionValue="value" size="small">
+                    (ngModelChange)="onRefreshRateChange()" optionLabel="label" optionValue="value"
+                    class="custom-select-button">
                 </p-selectButton>
             </div>
 
-            <!-- Last Update Info -->
+            <!-- Meta info -->
             @if (lastUpdate()) {
-            <span class="last-update">
-                <i class="pi pi-sync mr-1"></i>
-                Updated: {{ lastUpdate() | date:'HH:mm:ss' }}
-            </span>
+            <div
+                class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-color-secondary bg-white/5 rounded-lg border border-white/5">
+                <i class="pi pi-spin pi-sync opacity-60"></i>
+                <span>{{ lastUpdate() | date:'HH:mm:ss' }}</span>
+            </div>
             }
 
-            <!-- Refresh Button -->
-            <p-button icon="pi pi-refresh" label="Refresh" (onClick)="onRefresh()" [loading]="isLoading()"
-                severity="secondary" size="small">
-            </p-button>
+            <!-- Action -->
+            <button pButton icon="pi pi-refresh" label="Poll Now" (onClick)="onRefresh()" [loading]="isLoading()"
+                class="p-button-primary p-button-sm rounded-xl shadow-lg hover:shadow-primary/20 transition-all duration-300">
+            </button>
 
         </div>
     </div>
-</p-toolbar>
+</header>

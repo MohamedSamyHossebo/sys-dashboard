@@ -1,63 +1,95 @@
-.header-toolbar {
-    border-radius: 0.75rem;
-    margin-bottom: 1.5rem;
-    background: var(--surface-overlay);
-    border: 1px solid var(--surface-border);
+/* Specialized overrides for PrimeNG components in the header */
+:host ::ng-deep .custom-select-button .p-selectbutton {
+    background: transparent;
+    border: none;
+    gap: 0.5rem;
+    padding: 0.125rem;
 }
 
-.header-title {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.header-title i {
-    font-size: 1.75rem;
-    color: var(--primary-color);
-    animation: pulse 2s ease-in-out infinite;
-}
-
-.header-title h2 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-600));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.health-status {
-    font-size: 0.875rem;
-    font-weight: 600;
-    padding: 0.25rem 0.75rem;
-    border-radius: 1rem;
-}
-
-.status-success {
-    background: color-mix(in srgb, var(--green-500) 15%, transparent);
-    color: var(--green-500);
-}
-
-.status-info {
-    background: color-mix(in srgb, var(--blue-500) 15%, transparent);
-    color: var(--blue-500);
-}
-
-.status-warn {
-    background: color-mix(in srgb, var(--orange-500) 15%, transparent);
-    color: var(--orange-500);
-}
-
-.status-danger {
-    background: color-mix(in srgb, var(--red-500) 15%, transparent);
-    color: var(--red-500);
-}
-
-.last-update {
-    font-size: 0.875rem;
+:host ::ng-deep .custom-select-button .p-button {
+    background: transparent;
+    border: 1px solid transparent;
     color: var(--text-color-secondary);
+    border-radius: 0.5rem !important;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 2.5rem;
     display: flex;
     align-items: center;
+    justify-content: center;
+}
+
+/* Fix overlapping labels in PrimeNG v21 SelectButton */
+:host ::ng-deep .custom-select-button .p-button .p-button-label {
+    position: relative;
+    z-index: 1;
+    white-space: nowrap;
+}
+
+:host ::ng-deep .custom-select-button .p-button.p-highlight {
+    background: rgba(139, 92, 246, 0.15) !important;
+    border-color: rgba(139, 92, 246, 0.4) !important;
+    color: var(--accent-secondary, #a78bfa) !important;
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
+}
+
+body.dark :host ::ng-deep .custom-select-button .p-button.p-highlight {
+    background: rgba(139, 92, 246, 0.2) !important;
+    border-color: rgba(139, 92, 246, 0.5) !important;
+}
+
+:host ::ng-deep .custom-select-button .p-button:not(.p-highlight):hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-color);
+}
+
+/* ToggleSwitch Overrides */
+:host ::ng-deep p-toggleSwitch .p-toggleswitch {
+    width: 2.5rem;
+    height: 1.25rem;
+}
+
+:host ::ng-deep p-toggleSwitch .p-toggleswitch-slider {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 2rem;
+}
+
+:host ::ng-deep p-toggleSwitch .p-toggleswitch-handle {
+    width: 0.85rem;
+    height: 0.85rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    left: 0.2rem;
+}
+
+:host ::ng-deep p-toggleSwitch .p-toggleswitch-checked .p-toggleswitch-handle {
+    left: calc(100% - 1.05rem);
+}
+
+:host ::ng-deep p-toggleSwitch .p-toggleswitch-checked .p-toggleswitch-slider {
+    background: var(--primary-color) !important;
+}
+
+/* Status colors */
+.text-success {
+    color: #22c55e;
+}
+
+.text-info {
+    color: #3b82f6;
+}
+
+.text-warn {
+    color: #f59e0b;
+}
+
+.text-danger {
+    color: #ef4444;
 }
 
 @keyframes pulse {
@@ -74,13 +106,6 @@
     }
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .header-title h2 {
-        font-size: 1.25rem;
-    }
-
-    .last-update {
-        display: none;
-    }
+.animate-pulse {
+    animation: pulse 2s ease-in-out infinite;
 }

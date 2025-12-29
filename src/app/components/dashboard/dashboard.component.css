@@ -1,7 +1,50 @@
 .dashboard-container {
     max-width: 1600px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 1.5rem 2rem;
+}
+
+/* Header Section Enhancement */
+.header-section {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 1.25rem;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2.5rem;
+}
+
+body.dark .header-section {
+    background: rgba(17, 24, 39, 0.6);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 15px rgba(139, 92, 246, 0.1);
+}
+
+.customize-btn {
+    background: rgba(255, 255, 255, 0.5) !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    color: var(--text-color) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+body.dark .customize-btn {
+    background: rgba(139, 92, 246, 0.1) !important;
+    border-color: rgba(139, 92, 246, 0.3) !important;
+    color: var(--accent-secondary, #a78bfa) !important;
+}
+
+.customize-btn:hover {
+    background: var(--surface-hover) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+body.dark .customize-btn:hover {
+    background: rgba(139, 92, 246, 0.2) !important;
+    border-color: var(--accent-primary) !important;
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.4) !important;
 }
 
 /* Glassmorphism Cards - Light Mode */
@@ -18,7 +61,7 @@
 }
 
 /* Dark Mode Cards */
-body.dark-mode :host ::ng-deep .p-card {
+body.dark :host ::ng-deep .p-card {
     background: var(--card-bg, rgba(17, 24, 39, 0.85)) !important;
     border: 1px solid var(--card-border, rgba(139, 92, 246, 0.2)) !important;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(139, 92, 246, 0.1) inset !important;
@@ -36,7 +79,7 @@ body.dark-mode :host ::ng-deep .p-card {
     transition: opacity 0.3s ease;
 }
 
-body.dark-mode :host ::ng-deep .p-card::before {
+body.dark :host ::ng-deep .p-card::before {
     background: linear-gradient(90deg, #8b5cf6 0%, #a78bfa 50%, #c4b5fd 100%);
     box-shadow: 0 0 20px rgba(139, 92, 246, 0.6);
 }
@@ -47,7 +90,7 @@ body.dark-mode :host ::ng-deep .p-card::before {
     border-color: rgba(102, 126, 234, 0.4) !important;
 }
 
-body.dark-mode :host ::ng-deep .p-card:hover {
+body.dark :host ::ng-deep .p-card:hover {
     box-shadow: 0 12px 40px var(--card-glow, rgba(139, 92, 246, 0.4)),
         0 0 60px rgba(139, 92, 246, 0.2),
         0 0 0 1px rgba(139, 92, 246, 0.3) inset !important;
@@ -68,7 +111,7 @@ body.dark-mode :host ::ng-deep .p-card:hover {
     padding: 1.5rem !important;
 }
 
-body.dark-mode :host ::ng-deep .p-card-header {
+body.dark :host ::ng-deep .p-card-header {
     border-bottom: 1px solid rgba(139, 92, 246, 0.15) !important;
     color: var(--text-color) !important;
     text-shadow: 0 2px 10px rgba(139, 92, 246, 0.3);
@@ -93,7 +136,7 @@ body.dark-mode :host ::ng-deep .p-card-header {
     transition: all 0.2s ease;
 }
 
-body.dark-mode .stat-item {
+body.dark .stat-item {
     border-bottom: 1px solid rgba(139, 92, 246, 0.1);
 }
 
@@ -153,7 +196,7 @@ body.dark-mode .stat-icon {
     font-weight: 500;
 }
 
-body.dark-mode .stat-label {
+body.dark .stat-label {
     color: var(--text-secondary, #94a3b8);
 }
 
@@ -250,7 +293,7 @@ body.dark-mode .uptime-display {
     font-weight: 500;
 }
 
-body.dark-mode .uptime-label {
+body.dark .uptime-label {
     color: var(--text-secondary, #94a3b8);
 }
 
@@ -305,7 +348,7 @@ body.dark-mode :host ::ng-deep .p-progressbar-value {
     backdrop-filter: blur(8px);
 }
 
-body.dark-mode .mt-4.text-center {
+body.dark .mt-4.text-center {
     color: var(--text-secondary, #94a3b8);
     background: rgba(139, 92, 246, 0.05);
     border: 1px solid rgba(139, 92, 246, 0.15);
@@ -347,7 +390,7 @@ body.dark-mode .mt-4.text-center {
     border: 1px solid var(--surface-border);
 }
 
-body.dark-mode :host ::ng-deep .custom-dialog .p-dialog-content {
+body.dark :host ::ng-deep .custom-dialog .p-dialog-content {
     background: rgba(17, 24, 39, 0.95);
     border-color: rgba(139, 92, 246, 0.3);
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
@@ -359,7 +402,7 @@ body.dark-mode :host ::ng-deep .custom-dialog .p-dialog-content {
     color: var(--text-color);
 }
 
-body.dark-mode :host ::ng-deep .custom-dialog .p-dialog-header {
+body.dark :host ::ng-deep .custom-dialog .p-dialog-header {
     background: rgba(17, 24, 39, 0.98);
     border-color: rgba(139, 92, 246, 0.2);
 }
@@ -369,7 +412,7 @@ body.dark-mode :host ::ng-deep .custom-dialog .p-dialog-header {
     border-top: 1px solid var(--surface-border);
 }
 
-body.dark-mode :host ::ng-deep .custom-dialog .p-dialog-footer {
+body.dark :host ::ng-deep .custom-dialog .p-dialog-footer {
     background: rgba(17, 24, 39, 0.98);
     border-color: rgba(139, 92, 246, 0.2);
 }
@@ -378,6 +421,6 @@ body.dark-mode :host ::ng-deep .custom-dialog .p-dialog-footer {
     background: var(--surface-section);
 }
 
-body.dark-mode .surface-hover {
+body.dark .surface-hover {
     background: rgba(139, 92, 246, 0.1);
 }

@@ -1,6 +1,6 @@
 # 📊 System Dashboard (SysDashboard)
 
-A high-performance, real-time system monitoring dashboard built with **Angular 19**, **Signals**, **PrimeNG 21**, and **Node.js**. Monitor your system's health, CPU usage, memory distribution, disk activity, and active processes from a beautiful, glassmorphic interface.
+A high-performance, real-time system monitoring dashboard built with **Angular 21**, **Signals**, **PrimeNG 21**, and **Node.js**. Monitor your system's health, CPU usage, memory distribution, disk activity, and active processes from a beautiful, glassmorphic interface.
 
 ![Dashboard Preview](https://raw.githubusercontent.com/username/sys-dashboard/main/preview.png) *(Note: Placeholder for actual preview image)*
 
@@ -21,7 +21,7 @@ A high-performance, real-time system monitoring dashboard built with **Angular 1
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: Angular 19 (Standalone), RxJS, Signals.
+- **Frontend**: Angular 21 (Standalone), RxJS, Signals.
 - **UI Components**: PrimeNG 21, PrimeIcons.
 - **Styling**: Tailwind CSS v4, Vanilla CSS variables.
 - **Charts**: Chart.js.
@@ -39,7 +39,7 @@ A high-performance, real-time system monitoring dashboard built with **Angular 1
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-username/sys-dashboard.git
+   git clone https://github.com/MohamedSamyHossebo/sys-dashboard.git
    cd sys-dashboard
    ```
 

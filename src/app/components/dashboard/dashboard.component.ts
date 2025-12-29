@@ -97,6 +97,7 @@ export class DashboardComponent implements OnInit {
         return {
             responsive: true,
             maintainAspectRatio: false,
+            animation: false,
             plugins: {
                 legend: {
                     position: 'bottom',
@@ -154,6 +155,7 @@ export class DashboardComponent implements OnInit {
         return {
             responsive: true,
             maintainAspectRatio: false,
+            animation: false,
             plugins: {
                 legend: { display: false },
                 tooltip: {
@@ -216,6 +218,7 @@ export class DashboardComponent implements OnInit {
         return {
             responsive: true,
             maintainAspectRatio: false,
+            animation: false,
             plugins: {
                 legend: { display: false },
                 tooltip: {

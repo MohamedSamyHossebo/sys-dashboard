@@ -1,0 +1,102 @@
+.dashboard-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--surface-border);
+}
+
+.stat-item:last-child {
+    border-bottom: none;
+}
+
+.stat-icon {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    min-width: 2rem;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--text-color-secondary);
+    margin-bottom: 0.25rem;
+}
+
+.stat-value {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.cpu-model {
+    font-size: 0.95rem;
+    word-break: break-word;
+}
+
+.chart-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 250px;
+}
+
+.uptime-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 0;
+}
+
+.uptime-icon {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.uptime-value {
+    font-size: 1.75rem;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.uptime-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.uptime-label {
+    font-size: 0.875rem;
+    color: var(--text-color-secondary);
+    margin-top: 0.25rem;
+}
+
+/* Card animations */
+:host ::ng-deep .p-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+:host ::ng-deep .p-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .stat-value {
+        font-size: 1rem;
+    }
+
+    .uptime-value {
+        font-size: 1.5rem;
+    }
+
+    .uptime-number {
+        font-size: 1.5rem;
+    }
+}

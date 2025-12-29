@@ -16,6 +16,7 @@ export interface CpuInfo {
     model: string;
     cores: number;
     speed: number;
+    usage?: number;
 }
 
 export interface MemoryInfo {
@@ -38,12 +39,68 @@ export interface UptimeInfo {
     };
 }
 
+export interface LoadAverage {
+    '1min': string;
+    '5min': string;
+    '15min': string;
+}
+
+export interface DiskInfo {
+    total: number;
+    used: number;
+    free: number;
+    usedPercentage: string;
+    totalGB: string;
+    usedGB: string;
+    freeGB: string;
+    note?: string;
+}
+
+export interface NetworkInterface {
+    name: string;
+    address: string;
+    netmask: string;
+    family: string;
+    mac: string;
+    internal: boolean;
+    cidr: string;
+}
+
+export interface NetworkInfo {
+    interfaces: NetworkInterface[];
+    count: number;
+}
+
+export interface SystemHealth {
+    score: number;
+    status: 'excellent' | 'good' | 'warning' | 'critical';
+    metrics: {
+        memoryUsage: string;
+        cpuUsage: number;
+    };
+}
+
+export interface HistoricalDataPoint {
+    cpuUsage: number;
+    memoryUsage: number;
+    loadAvg: number;
+    timestamp: string;
+}
+
+export interface HistoricalData {
+    data: HistoricalDataPoint[];
+    count: number;
+    maxPoints: number;
+}
+
 export interface AllSystemStats {
     systemInfo: SystemInfo;
     cpu: CpuInfo;
     memory: MemoryInfo;
     uptime: UptimeInfo;
+    loadAverage: LoadAverage;
     networkInterfaces: number;
+    health: number;
     timestamp: string;
 }
 
@@ -58,6 +115,7 @@ export class SystemService {
     systemStats = signal<AllSystemStats | null>(null);
     isLoading = signal<boolean>(false);
     error = signal<string | null>(null);
+    refreshRate = signal<number>(5000); // Default 5 seconds
 
     getSystemInfo(): Observable<SystemInfo> {
         return this.http.get<SystemInfo>(`${this.baseUrl}/info`);
@@ -75,17 +133,34 @@ export class SystemService {
         return this.http.get<UptimeInfo>(`${this.baseUrl}/uptime`);
     }
 
-    getNetworkInfo(): Observable<any> {
-        return this.http.get(`${this.baseUrl}/network`);
+    getLoadAverage(): Observable<{ average: LoadAverage; cores: number }> {
+        return this.http.get<{ average: LoadAverage; cores: number }>(`${this.baseUrl}/load`);
+    }
+
+    getDiskInfo(): Observable<DiskInfo> {
+        return this.http.get<DiskInfo>(`${this.baseUrl}/disk`);
+    }
+
+    getNetworkInfo(): Observable<NetworkInfo> {
+        return this.http.get<NetworkInfo>(`${this.baseUrl}/network`);
+    }
+
+    getSystemHealth(): Observable<SystemHealth> {
+        return this.http.get<SystemHealth>(`${this.baseUrl}/health`);
+    }
+
+    getHistoricalData(): Observable<HistoricalData> {
+        return this.http.get<HistoricalData>(`${this.baseUrl}/history`);
     }
 
     getAllStats(): Observable<AllSystemStats> {
         return this.http.get<AllSystemStats>(`${this.baseUrl}/all`);
     }
 
-    // Poll for stats every 5 seconds
-    pollStats(intervalMs: number = 5000): Observable<AllSystemStats> {
-        return interval(intervalMs).pipe(
+    // Poll for stats with configurable interval
+    pollStats(intervalMs?: number): Observable<AllSystemStats> {
+        const interval$ = intervalMs ?? this.refreshRate();
+        return interval(interval$).pipe(
             startWith(0),
             switchMap(() => this.getAllStats())
         );
@@ -107,5 +182,10 @@ export class SystemService {
                 console.error('Error fetching system stats:', err);
             }
         });
+    }
+
+    // Set refresh rate
+    setRefreshRate(ms: number): void {
+        this.refreshRate.set(ms);
     }
 }

@@ -1,14 +1,9 @@
 <div class="dashboard-container p-4">
-    <!-- Header -->
-    <div class="flex align-items-center justify-content-between mb-4">
-        <h1 class="text-4xl font-bold">
-            <i class="pi pi-desktop mr-2"></i>
-            System Dashboard
-        </h1>
-        <p-button icon="pi pi-refresh" label="Refresh" (onClick)="refresh()" [loading]="isLoading()"
-            severity="secondary">
-        </p-button>
-    </div>
+    <!-- New Header Component -->
+    <app-header [systemHealth]="stats()?.health || 100" [lastUpdate]="stats()?.timestamp || ''"
+        [isLoading]="isLoading()" (refresh)="refresh()" (refreshRateChange)="onRefreshRateChange($event)"
+        (darkModeToggle)="onDarkModeToggle($event)">
+    </app-header>
 
     <!-- Error Message -->
     @if (error()) {
@@ -29,8 +24,14 @@
     </div>
     }
 
-    <!-- Dashboard Content -->
+    <!-- Metrics Summary Component -->
     @if (stats(); as currentStats) {
+    <app-metrics-summary [cpuCores]="currentStats.cpu.cores" [memoryUsage]="currentStats.memory.usedPercentage"
+        [diskUsage]="'65'" [uptime]="uptimeFormatted()" [networkCount]="currentStats.networkInterfaces"
+        [health]="currentStats.health">
+    </app-metrics-summary>
+
+    <!-- Dashboard Content -->
     <div class="grid">
 
         <!-- System Info Card -->

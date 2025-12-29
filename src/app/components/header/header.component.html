@@ -1,0 +1,52 @@
+<p-toolbar class="header-toolbar">
+    <div class="flex align-items-center justify-content-between w-full gap-3 flex-wrap">
+
+        <!-- Left Section: Title and Health -->
+        <div class="flex align-items-center gap-3">
+            <div class="header-title">
+                <i class="pi pi-desktop"></i>
+                <h2 class="m-0">System Monitor</h2>
+            </div>
+
+            <p-badge [value]="systemHealth() + '%'" [severity]="$any(healthStatus().severity)" size="large">
+            </p-badge>
+
+            <span class="health-status" [class]="'status-' + healthStatus().severity">
+                {{ healthStatus().label }}
+            </span>
+        </div>
+
+        <!-- Right Section: Controls -->
+        <div class="flex align-items-center gap-3 flex-wrap">
+
+            <!-- Dark Mode Toggle -->
+            <div class="flex align-items-center gap-2">
+                <i class="pi pi-moon"></i>
+                <p-toggleSwitch [(ngModel)]="isDarkMode" (ngModelChange)="onDarkModeToggle()">
+                </p-toggleSwitch>
+            </div>
+
+            <!-- Refresh Rate Selector -->
+            <div class="flex align-items-center gap-2">
+                <i class="pi pi-clock"></i>
+                <p-selectButton [options]="refreshRateOptions" [(ngModel)]="selectedRefreshRate"
+                    (ngModelChange)="onRefreshRateChange()" optionLabel="label" optionValue="value" size="small">
+                </p-selectButton>
+            </div>
+
+            <!-- Last Update Info -->
+            @if (lastUpdate()) {
+            <span class="last-update">
+                <i class="pi pi-sync mr-1"></i>
+                Updated: {{ lastUpdate() | date:'HH:mm:ss' }}
+            </span>
+            }
+
+            <!-- Refresh Button -->
+            <p-button icon="pi pi-refresh" label="Refresh" (onClick)="onRefresh()" [loading]="isLoading()"
+                severity="secondary" size="small">
+            </p-button>
+
+        </div>
+    </div>
+</p-toolbar>

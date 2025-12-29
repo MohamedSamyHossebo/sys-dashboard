@@ -12,6 +12,8 @@ import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 
 import { SystemService, AllSystemStats } from '../../services/system.service';
+import { HeaderComponent } from '../header/header.component';
+import { MetricsSummaryComponent } from '../metrics-summary/metrics-summary.component';
 
 @Component({
     selector: 'app-dashboard',
@@ -23,7 +25,9 @@ import { SystemService, AllSystemStats } from '../../services/system.service';
         TagModule,
         PanelModule,
         ButtonModule,
-        SkeletonModule
+        SkeletonModule,
+        HeaderComponent,
+        MetricsSummaryComponent
     ],
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.css']
@@ -146,5 +150,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
         if (usage < 75) return '#3B82F6'; // info - blue
         if (usage < 90) return '#F59E0B'; // warn - orange
         return '#EF4444'; // danger - red
+    }
+
+    // Header event handlers
+    onRefreshRateChange(rate: number): void {
+        this.systemService.setRefreshRate(rate);
+        this.ngOnDestroy(); // Clean up old subscription
+        this.startPolling(); // Start with new rate
+    }
+
+    onDarkModeToggle(enabled: boolean): void {
+        document.body.classList.toggle('dark-mode', enabled);
     }
 }

@@ -59,7 +59,8 @@
               "buildTarget": "sys-dashboard:build:production"
             },
             "development": {
-              "buildTarget": "sys-dashboard:build:development"
+              "buildTarget": "sys-dashboard:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

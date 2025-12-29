@@ -1,6 +1,5 @@
-import { Component, OnInit, OnDestroy, signal, computed, inject } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Subscription } from 'rxjs';
 
 // PrimeNG Imports
 import { CardModule } from 'primeng/card';
@@ -50,14 +49,16 @@ export interface WidgetConfig {
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent implements OnInit, OnDestroy {
-    private systemService = inject(SystemService);
-    private subscription?: Subscription;
+export class DashboardComponent implements OnInit {
+    public systemService = inject(SystemService);
 
-    isDarkMode = signal<boolean>(document.body.classList.contains('dark-mode'));
-    stats = signal<AllSystemStats | null>(null);
-    isLoading = signal<boolean>(true);
-    error = signal<string | null>(null);
+    isDarkMode = signal<boolean>(document.body.classList.contains('dark'));
+
+    // Alias signals for easier template access if desired, 
+    // but we'll use systemService directly in template to avoid redundancy
+    stats = this.systemService.systemStats;
+    isLoading = this.systemService.isLoading;
+    error = this.systemService.error;
 
     // Widget Management
     showSettings = signal<boolean>(false);
@@ -273,8 +274,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.loadWidgetSettings();
-        this.loadStats();
-        this.startPolling();
     }
 
     loadWidgetSettings(): void {
@@ -306,41 +305,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.showSettings.update(v => !v);
     }
 
-    ngOnDestroy(): void {
-        this.subscription?.unsubscribe();
-    }
-
-    loadStats(): void {
-        this.isLoading.set(true);
-        this.systemService.getAllStats().subscribe({
-            next: (data) => {
-                this.stats.set(data);
-                this.isLoading.set(false);
-                this.error.set(null);
-            },
-            error: (err) => {
-                this.error.set('Failed to load system statistics');
-                this.isLoading.set(false);
-                console.error('Error loading stats:', err);
-            }
-        });
-    }
-
-    startPolling(): void {
-        this.subscription = this.systemService.pollStats(5000).subscribe({
-            next: (data) => {
-                this.stats.set(data);
-                this.error.set(null);
-            },
-            error: (err) => {
-                this.error.set('Connection lost');
-                console.error('Polling error:', err);
-            }
-        });
-    }
 
     refresh(): void {
-        this.loadStats();
+        this.systemService.fetchStats();
     }
 
     getMemoryUsageSeverity(): 'success' | 'info' | 'warn' | 'danger' {
@@ -368,8 +335,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     // Header event handlers
     onRefreshRateChange(rate: number): void {
         this.systemService.setRefreshRate(rate);
-        this.ngOnDestroy(); // Clean up old subscription
-        this.startPolling(); // Start with new rate
     }
 
     onDarkModeToggle(enabled: boolean): void {

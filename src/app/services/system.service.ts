@@ -1,7 +1,8 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, interval } from 'rxjs';
-import { switchMap, startWith } from 'rxjs/operators';
+import { Observable, interval, Subject, merge, of, timer } from 'rxjs';
+import { switchMap, startWith, map, catchError, tap, shareReplay, repeat, concatMap } from 'rxjs/operators';
+import { toSignal, toObservable } from '@angular/core/rxjs-interop';
 
 export interface SystemInfo {
     platform: string;
@@ -129,10 +130,49 @@ export class SystemService {
     private baseUrl = '/api/system';
 
     // Signals for reactive state
-    systemStats = signal<AllSystemStats | null>(null);
+    refreshRate = signal<number>(5000); // Default 5 seconds
     isLoading = signal<boolean>(false);
     error = signal<string | null>(null);
-    refreshRate = signal<number>(5000); // Default 5 seconds
+
+    private manualRefresh$ = new Subject<void>();
+
+    // The primary, reactive stats signal
+    systemStats = toSignal(
+        merge(
+            this.manualRefresh$,
+            // Restart the polling cycle whenever the refresh rate changes
+            toObservable(this.refreshRate)
+        ).pipe(
+            switchMap(() => {
+                // This inner observable handles the recursive polling
+                return of(null).pipe(
+                    // concatMap ensures we wait for the current request to finish
+                    concatMap(() => {
+                        this.isLoading.set(true);
+                        return this.getAllStats().pipe(
+                            tap(() => {
+                                this.isLoading.set(false);
+                                this.error.set(null);
+                            }),
+                            catchError(err => {
+                                console.error('Data fetch error:', err);
+                                this.error.set('Connection lost. Attempting to reconnect...');
+                                this.isLoading.set(false);
+                                return of(null);
+                            })
+                        );
+                    }),
+                    // repeat({ delay: ... }) runs AFTER the source completes
+                    // This creates the "poll -> wait -> poll" sequence
+                    repeat({
+                        delay: () => timer(this.refreshRate())
+                    })
+                );
+            }),
+            shareReplay(1)
+        ),
+        { initialValue: null }
+    );
 
     getSystemInfo(): Observable<SystemInfo> {
         return this.http.get<SystemInfo>(`${this.baseUrl}/info`);
@@ -178,32 +218,11 @@ export class SystemService {
         return this.http.get<AllSystemStats>(`${this.baseUrl}/all`);
     }
 
-    // Poll for stats with configurable interval
-    pollStats(intervalMs?: number): Observable<AllSystemStats> {
-        const interval$ = intervalMs ?? this.refreshRate();
-        return interval(interval$).pipe(
-            startWith(0),
-            switchMap(() => this.getAllStats())
-        );
-    }
-
-    // Fetch stats once and update signal
+    // Fetch stats once manually
     fetchStats(): void {
-        this.isLoading.set(true);
-        this.error.set(null);
-
-        this.getAllStats().subscribe({
-            next: (stats) => {
-                this.systemStats.set(stats);
-                this.isLoading.set(false);
-            },
-            error: (err) => {
-                this.error.set('Failed to fetch system stats');
-                this.isLoading.set(false);
-                console.error('Error fetching system stats:', err);
-            }
-        });
+        this.manualRefresh$.next();
     }
+
 
     // Set refresh rate
     setRefreshRate(ms: number): void {

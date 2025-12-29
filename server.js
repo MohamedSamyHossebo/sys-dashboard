@@ -214,17 +214,41 @@ app.get('/api/system/all', async (req, res) => {
   const cpuUsage = getCpuUsage();
   const loadAvg = os.loadavg();
 
+  // Fetch components in parallel to improve performance
   let diskInfo = null;
+  let processes = [];
+
   try {
-    const disks = await si.fsSize();
-    const mainDisk = disks[0];
-    diskInfo = {
-      totalGB: (mainDisk.size / (1024 ** 3)).toFixed(2),
-      usedGB: (mainDisk.used / (1024 ** 3)).toFixed(2),
-      freeGB: (mainDisk.available / (1024 ** 3)).toFixed(2),
-      usedPercentage: mainDisk.use.toFixed(2)
-    };
-  } catch (e) { }
+    const [diskResults, procResults] = await Promise.all([
+      si.fsSize().catch(() => null),
+      si.processes().catch(() => null)
+    ]);
+
+    if (diskResults && diskResults[0]) {
+      const mainDisk = diskResults[0];
+      diskInfo = {
+        totalGB: (mainDisk.size / (1024 ** 3)).toFixed(2),
+        usedGB: (mainDisk.used / (1024 ** 3)).toFixed(2),
+        freeGB: (mainDisk.available / (1024 ** 3)).toFixed(2),
+        usedPercentage: mainDisk.use.toFixed(2)
+      };
+    }
+
+    if (procResults && procResults.list) {
+      processes = procResults.list
+        .sort((a, b) => b.cpu - a.cpu)
+        .slice(0, 10)
+        .map(p => ({
+          pid: p.pid,
+          name: p.name,
+          cpu: p.cpu,
+          mem: p.mem,
+          user: p.user
+        }));
+    }
+  } catch (e) {
+    console.error('Error in parallel data fetch:', e);
+  }
 
   const allStats = {
     systemInfo: {
@@ -262,26 +286,10 @@ app.get('/api/system/all', async (req, res) => {
     networkInterfaces: Object.keys(os.networkInterfaces()).length,
     health: getSystemHealth(memoryUsage, cpuUsage, diskInfo?.usedPercentage || 0),
     disk: diskInfo,
+    processes: processes,
     history: historicalData,
     timestamp: new Date().toISOString()
   };
-
-  // Fetch top processes if possible
-  try {
-    const procData = await si.processes();
-    allStats.processes = procData.list
-      .sort((a, b) => b.cpu - a.cpu)
-      .slice(0, 10)
-      .map(p => ({
-        pid: p.pid,
-        name: p.name,
-        cpu: p.cpu,
-        mem: p.mem,
-        user: p.user
-      }));
-  } catch (e) {
-    allStats.processes = [];
-  }
 
   // Store in historical data
   storeHistoricalData({
